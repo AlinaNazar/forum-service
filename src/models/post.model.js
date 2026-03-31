@@ -4,7 +4,7 @@ import commentSchema from '../models/comment.model.js';
 const postSchema = new Schema({
     _id: {
         type: String,
-        default: () => new Types.ObjectId().toHexString(),
+         default: () => new Types.ObjectId().toHexString(),
         //mongoose.Schema.Types.ObjectId, ref: 'Post'
         },
     title:{
@@ -47,4 +47,4 @@ const postSchema = new Schema({
         }
     })
 
-export default mongoose.model('Post', postSchema, 'posts');
+export default model('Post', postSchema, 'posts');

@@ -1,6 +1,7 @@
 const errorHandler = (err, req, res, next) => {
     console.log(err.stack)
     const contains = err.message.toLowerCase().includes('not found');
+
     if (err.message && contains) {
         return res.status(404).json({
             "timestamp": new Date().toISOString(),
