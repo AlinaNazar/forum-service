@@ -30,7 +30,7 @@ export class UnauthorizedError extends AppError {
 }
 
 export class ForbiddenError extends AppError {
-    constructor(message = 'Validation failed') {
+    constructor(message = 'Access denied') {
         super(message, 403);
     }
 }
