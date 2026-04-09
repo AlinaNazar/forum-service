@@ -5,11 +5,11 @@ const router = Router();
 
 router.post('/register', userController.userRegister);
 router.post('/login', userController.userLogin);
-router.delete('/user/:userName', userController.deleteUser);
-router.patch('/user/:userName', userController.updateUser);
-router.patch('/user/:userName/role/:role', userController.addRole);
-router.delete('/user/:userName/role/:role', userController.deleteRole);
+router.delete('/user/:login', userController.deleteUser);
+router.patch('/user/:login', userController.updateUser);
+router.patch('/user/:login/role/:role', userController.addRole);
+router.delete('/user/:login/role/:role', userController.deleteRole);
 router.patch('/password', userController.changePassword);
-router.get('/user/:userName', userController.getUser);
+router.get('/user/:login', userController.getUser);
 
 export default router;

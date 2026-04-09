@@ -1,11 +1,20 @@
 const errorUserHandler = (err, req, res, next) => {
     console.log(err.stack)
     const msg = err?.message?.toLowerCase();
-    if(msg){
-        const contains = msg.includes('unauthorized') ? 'unauthorized'
-            : msg.includes('forbidden') ? 'forbidden' : '';
+
+    const contains = msg.includes('already registered') ? 'conflict'
+        : msg.includes('unauthorized') ? 'unauthorized'
+        : msg.includes('forbidden') ? 'forbidden' : null;
+
+    if (err.message && contains === 'conflict') {
+        return res.status(409).json({
+            "timestamp": new Date().toISOString(),
+            "status": 409,
+            "error": "Conflict",
+            "message": `User with userName ${req.params.userName} already exists.`,
+            "path": req.path
+        });
     }
-    //TODO 409 already registered
 
     if (err.message && contains === 'unauthorized') {
         return res.status(401).json({
@@ -16,6 +25,7 @@ const errorUserHandler = (err, req, res, next) => {
             "path": req.path
         });
     }
+
     if (err.message && contains === 'forbidden') {
         return res.status(403).json({
             "timestamp": new Date().toISOString(),

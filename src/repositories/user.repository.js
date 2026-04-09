@@ -5,32 +5,43 @@ class UserRepository{
         return User.create(data);
     }
 
-    async userLogin(userName, password) {
+    async userLogin(login, password) {
         //TODO login
+        throw new Error('Not implemented');
     }
 
-    async deleteUser(userName) {
-        //TODO delete user
+    async deleteUser(login) {
+        return User.findOneAndDelete({login}).exec();
     }
 
-    async updateUser(userName, data) {
-        //TODO
+    async updateUser(login, data) {
+       return User.findOneAndUpdate({login}, data, {returnDocument: 'after'})
+           .select('-_id').exec();
     }
 
-    async addRole(userName, role) {
-        //TODO
+    async addRole(login, role) {
+        return User.findOneAndUpdate(
+            {login},
+            {$addToSet: {roles: role}},
+            {returnDocument: 'after'}
+        ).select('login roles -_id').exec();
     }
 
-    async deleteRole(userName, role) {
-        //TODO
+    async deleteRole(login, role) {
+        return User.findOneAndUpdate(
+            {login},
+            {$pull: {roles: role}},
+            {returnDocument: 'after'}
+        ).select('login roles -_id').exec();
     }
 
     async changePassword(password) {
         //TODO
+        throw new Error('Not implemented');
     }
 
-    async getUser(userName) {
-        //TODO
+    async getUser(login) {
+        return User.findOne({login}).exec()
     }
 }
 
