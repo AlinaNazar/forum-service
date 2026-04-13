@@ -2,15 +2,15 @@ import userAccountRepository from "../repositories/userAccount.repository.js";
 import {NotFoundError} from "../error/errors.js";
 
 class UserAccountService {
-    ifUserExists(userAccount, login){
-        if(!userAccount){
+    ifUserExists(userAccount, login) {
+        if (!userAccount) {
             throw new NotFoundError(`User with login ${login} not found`);
         }
         return userAccount;
     }
 
     async register(user) {
-            return userAccountRepository.addUser(user);
+        return userAccountRepository.addUser(user);
     }
 
     async login(login) {
@@ -39,7 +39,7 @@ class UserAccountService {
 
         const userAccount = isAddRole
             ? await userAccountRepository.addRole(login, role)
-            : await userAccountRepository.updateUser(login, role);
+            : await userAccountRepository.removeRole(login, role);
         this.ifUserExists(userAccount, login);
         const {firstName, lastName, ...userRoles} = userAccount.toObject();
         return userRoles;
@@ -47,9 +47,10 @@ class UserAccountService {
 
     async changePassword(login, newPassword) {
         const userAccount = await userAccountRepository.findUser(login);
-        if (!userAccount) {throw new NotFoundError(`User with login ${login} not found`);}
-        userAccount.password = newPassword;
-        await userAccount.save();
+        const existingUser = this.ifUserExists(userAccount, login);
+        await userAccountRepository.changePassword(existingUser);
+
+
     }
 
     async getUser(login) {

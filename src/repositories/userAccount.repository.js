@@ -1,8 +1,16 @@
 import UserAccount from"../models/userAccount.model.js";
+import bcrypt from "bcrypt";
 
 class UserAccountRepository {
+
+    async saltMaker(password) {
+        const salt = await bcrypt.genSalt(12);
+        return bcrypt.hash(password, salt);
+    }
+
     async addUser(user){
-        return UserAccount.create(user);
+        const hashedPassword = await this.saltMaker(user.password);
+        return UserAccount.create({...user, password: hashedPassword});
     }
 
     async findUser(login){
@@ -25,9 +33,10 @@ class UserAccountRepository {
         return UserAccount.findByIdAndUpdate(login, {$pull:{roles: role}}, {new: true}).exec();
     }
 
-    // async changePassword(login, newPassword){
-    //     return UserAccount.findByIdAndUpdate(login, {password: newPassword}, {new: true}).exec();
-    // }
+    async changePassword(login, newPassword){
+        const hashedPassword = await this.saltMaker(newPassword);
+        return UserAccount.findByIdAndUpdate(login, {password: hashedPassword}, {new: true}).exec();
+    }
 }
 
 export default new UserAccountRepository();
