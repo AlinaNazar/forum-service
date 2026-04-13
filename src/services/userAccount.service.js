@@ -46,10 +46,8 @@ class UserAccountService {
     }
 
     async changePassword(login, newPassword) {
-        const userAccount = await userAccountRepository.findUser(login);
-        const existingUser = this.ifUserExists(userAccount, login);
-        await userAccountRepository.changePassword(existingUser);
-
+        const userAccount = await userAccountRepository.changePassword(login, newPassword);
+        this.ifUserExists(userAccount, login);
 
     }
 
