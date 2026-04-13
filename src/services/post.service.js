@@ -1,6 +1,15 @@
 import postRepository from "../repositories/post.repository.js"
+import {NotFoundError} from "../error/errors.js";
 
 class PostService {
+
+    ifPostExists(post, id){
+        if (!post) {
+            throw new NotFoundError(`Post with id = ${id} not found`);
+        }
+        return post;
+    }
+
     async createPost(author, data) {
         const tags = [...new Set(data.tags)];
         return await postRepository.createPost({...data, author, tags});
@@ -8,27 +17,18 @@ class PostService {
 
     async getPostById(id) {
         const post = await postRepository.findPostById(id);
-        if (!post) {
-            throw new Error(`Post with id = ${id} not found`);
-        }
-        return post;
+        return this.ifPostExists(post, id);
     }
 
 
     async deletePostById(id) {
         const post = await postRepository.deletePost(id);
-        if (!post) {
-            throw new Error(`Post with id = ${id} not found`);
-        }
-        return post;
+        return this.ifPostExists(post, id);
     }
 
     async addLike(id) {
         const post = await postRepository.addLike(id);
-        if (!post) {
-            throw new Error(`Post with id = ${id} not found`);
-        }
-        return post;
+        return this.ifPostExists(post, id);
     }
 
     async getPostsByAuthor(author) {
@@ -40,10 +40,7 @@ class PostService {
         const comment = {user: commenter, message: content};
         const post =
             await postRepository.addComment(id, comment);
-        if (!post) {
-            throw new Error(`Post with id = ${id} not found`);
-        }
-        return post;
+        return this.ifPostExists(post, id);
         // if (!comment || !comment.trim()) {
         //     const err = new Error('Comment message is required');
         //     err.status = 404;
@@ -63,15 +60,12 @@ class PostService {
     }
 
     async updatePostById(id, data) {
-        const updateData = { ...data };
+        // const updateData = { ...data };
         // if (updateData.tags !== undefined) {
         //     updateData.tags = this.normalizeTags(updateData.tags);
         // }
         const post = await postRepository.updatePost(id, data);
-        if (!post) {
-            throw new Error(`Post with id = ${id} not found`);
-        }
-        return post;
+        return this.ifPostExists(post, id);
     }
 }
 

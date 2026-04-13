@@ -1,4 +1,7 @@
 import Joi from 'joi';
+import {ValidationError} from '../error/errors.js';
+
+const VALID_ROLES = ["USER", "MODERATOR", "ADMIN"];
 
 const schemas = {
     createPost: Joi.object({
@@ -17,6 +20,27 @@ const schemas = {
     dateFormat: Joi.object({
         dateFrom: Joi.date().iso().required(),
         dateTo: Joi.date().iso().required().greater(Joi.ref('dateFrom')),
+    }),
+
+    register: Joi.object({
+        login: Joi.string().trim().min(3).required(),
+        password: Joi.string().min(4).required(),
+        firstName: Joi.string().trim().required(),
+        lastName: Joi.string().trim().required(),
+    }),
+
+    updateUser: Joi.object({
+        firstName: Joi.string().trim(),
+        lastName: Joi.string().trim(),
+    }).min(1),
+
+    changeRole: Joi.object({
+        login:Joi.string().trim().required(),
+        role: Joi.string().trim().uppercase().valid(...VALID_ROLES).required()
+    }),
+
+    changePassword: Joi.object({
+        newPassword: Joi.string().trim().min(4).required(),
     })
 
 }
@@ -26,16 +50,17 @@ const validate = (schemaName, target = 'body') => (req, res, next) => {
     if(!schema) {
         return next(new Error('Invalid schema name'));
     }
-    const {error} = schema.validate(req[target]);
+    const {error, value} = schema.validate(req[target], {
+        abortEarly: false,
+        stripUnknown: true,
+    });
+
     if(error) {
-        return res.status(400).send({
-            message: error.details[0].message,
-            code: 400,
-            status: 'Bad Request',
-            timestamp: new Date().toISOString(),
-            path: req.path
-        });
+        return next(
+            new ValidationError(error.details.map(e => e.message).join(', ')),
+        );
     }
+    req[target] = value;
     return next();
 }
 

@@ -1,13 +1,16 @@
 import userAccountRepository from "../repositories/userAccount.repository.js";
+import {NotFoundError} from "../error/errors.js";
 
 class UserAccountService {
-    async register(user) {
-        try {
-            return await userAccountRepository.addUser(user);
-        } catch (err) {
-            console.log(err);
-            throw new Error('User already exists');
+    ifUserExists(userAccount, login){
+        if(!userAccount){
+            throw new NotFoundError(`User with login ${login} not found`);
         }
+        return userAccount;
+    }
+
+    async register(user) {
+            return userAccountRepository.addUser(user);
     }
 
     async login(login) {
@@ -17,55 +20,41 @@ class UserAccountService {
 
     async removeUser(login) {
         const userAccount = await userAccountRepository.removeUser(login);
-        if (!userAccount) {
-            throw new Error(`User with login ${login} is not found`);
-        }
-        return userAccount;
+        return this.ifUserExists(userAccount, login);
     }
 
     async updateUser(login, updateData) {
         const userAccount = await userAccountRepository.updateUser(login, updateData);
-        if (!userAccount) {
-            throw new Error(`User with login ${login} not found`);
-        }
-        return userAccount;
+        return this.ifUserExists(userAccount, login);
     }
 
-    // async addRole(login, role){
-    //     //TODO: Implement role addition/removal logic
-    //     throw new Error('Method not implemented');
-    // }
-
     async changeRoles(login, role, isAddRole) {
-        role = role.toUpperCase();
-        let userAccount;
-        if (isAddRole) {
-            userAccount = await userAccountRepository.addRole(login, role);
-        } else {
-            userAccount = await userAccountRepository.removeRole(login, role);
-        }
-        if (!userAccount) {
-            throw new Error(`User with login ${login} not found`);
-        }
-        // const {roles} = userAccount;
-        // return {login, roles};
+        //role = role.toUpperCase();
+        // let userAccount;
+        // if (isAddRole) {
+        //     userAccount = await userAccountRepository.addRole(login, role);
+        // } else {
+        //     userAccount = await userAccountRepository.removeRole(login, role);
+        // }
+
+        const userAccount = isAddRole
+            ? await userAccountRepository.addRole(login, role)
+            : await userAccountRepository.updateUser(login, role);
+        this.ifUserExists(userAccount, login);
         const {firstName, lastName, ...userRoles} = userAccount.toObject();
         return userRoles;
     }
 
     async changePassword(login, newPassword) {
-        const userAccount = await userAccountRepository.changePassword(login, newPassword);
-        if (!userAccount) {
-            throw new Error(`User with login ${login} not found`);
-        }
+        const userAccount = await userAccountRepository.findUser(login);
+        if (!userAccount) {throw new NotFoundError(`User with login ${login} not found`);}
+        userAccount.password = newPassword;
+        await userAccount.save();
     }
 
     async getUser(login) {
         const userAccount = await userAccountRepository.findUser(login);
-        if (!userAccount) {
-            throw new Error(`User with login ${login} not found`);
-        }
-        return userAccount;
+        return this.ifUserExists(userAccount, login);
     }
 }
 
