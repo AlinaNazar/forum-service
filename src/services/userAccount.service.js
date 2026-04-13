@@ -42,7 +42,7 @@ class UserAccountService {
         if (isAddRole) {
             userAccount = await userAccountRepository.addRole(login, role);
         } else {
-            userAccount = await userAccountRepository.deleteRole(login, role);
+            userAccount = await userAccountRepository.removeRole(login, role);
         }
         if (!userAccount) {
             throw new Error(`User with login ${login} not found`);
@@ -50,12 +50,14 @@ class UserAccountService {
         // const {roles} = userAccount;
         // return {login, roles};
         const {firstName, lastName, ...userRoles} = userAccount.toObject();
-        return userAccount;
+        return userRoles;
     }
 
-    async changePassword(password) {
-        //TODO: Implement password change logic
-        throw new Error('Method not implemented');
+    async changePassword(login, newPassword) {
+        const userAccount = await userAccountRepository.changePassword(login, newPassword);
+        if (!userAccount) {
+            throw new Error(`User with login ${login} not found`);
+        }
     }
 
     async getUser(login) {

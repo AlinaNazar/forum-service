@@ -18,11 +18,11 @@ class UserAccountRepository {
     }
 
     async addRole(login, role){
-        return UserAccount.findByIdAndDelete(login, {$addToSet:{roles: role}}, {new: true});
+        return UserAccount.findByIdAndUpdateju(login, {$addToSet:{roles: role}}, {new: true}).exec();
     }
 
-    async deleteRole(login, role){
-        return UserAccount.findByIdAndDelite(login, {$pull:{roles: role}}, {new: true});
+    async removeRole(login, role){
+        return UserAccount.findByIdAndUpdate(login, {$pull:{roles: role}}, {new: true}).exec();
     }
 
     async changePassword(login, newPassword){

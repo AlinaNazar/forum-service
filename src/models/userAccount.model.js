@@ -1,4 +1,5 @@
 import {Schema, model} from "mongoose";
+import bcrypt from "bcrypt";
 
 const userAccountSchema = new Schema({
         _id: {
@@ -30,7 +31,7 @@ const userAccountSchema = new Schema({
                 ret.login = doc._id;
                 delete ret.password;
                 delete ret._id;
-                if(options?.hidePersonal){
+                if (options?.hidePersonal) {
                     delete ret.firstName;
                     delete ret.lastName;
                 }
@@ -44,6 +45,19 @@ const userAccountSchema = new Schema({
                 delete ret._id;
             }
         }
-    })
+    });
+
+userAccountSchema.pre('save', async function () {
+    if (this.isModified('password')) {
+        const salt = await bcrypt.genSalt(12);
+        this.password = await bcrypt.hash(this.password, salt);
+    }
+})
+// userAccountSchema.pre('update', async function (next) {
+//     if (this.isModified('password')) {
+//         const salt = await bcrypt.genSalt(12);
+//         this.password = await bcrypt.hash(this.password, salt);
+//     }
+// })
 
 export default model("userAccount", userAccountSchema, 'users');
