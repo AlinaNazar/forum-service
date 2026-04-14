@@ -1,7 +1,6 @@
 import Joi from 'joi';
 import {ValidationError} from '../error/errors.js';
-
-const VALID_ROLES = ["USER", "MODERATOR", "ADMIN"];
+import {ADMIN, MODERATOR, USER} from "../configuration/constants.js";
 
 const schemas = {
     createPost: Joi.object({
@@ -23,24 +22,24 @@ const schemas = {
     }),
 
     register: Joi.object({
-        login: Joi.string().trim().min(3).required(),
-        password: Joi.string().min(4).required(),
-        firstName: Joi.string().trim().required(),
-        lastName: Joi.string().trim().required(),
+        login: Joi.string().required(),
+        password: Joi.string().required(),
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required(),
     }),
 
     updateUser: Joi.object({
-        firstName: Joi.string().trim(),
-        lastName: Joi.string().trim(),
+        firstName: Joi.string(),
+        lastName: Joi.string(),
     }).min(1),
 
     changeRole: Joi.object({
-        login:Joi.string().trim().required(),
-        role: Joi.string().trim().uppercase().valid(...VALID_ROLES).required()
+        login:Joi.string().required(),
+        role: Joi.string().uppercase().valid(USER, ADMIN, MODERATOR).insensitive().required()
     }),
 
     changePassword: Joi.object({
-        newPassword: Joi.string().trim().min(4).required(),
+        password: Joi.string().required(),
     })
 
 }

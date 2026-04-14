@@ -29,14 +29,6 @@ class UserAccountService {
     }
 
     async changeRoles(login, role, isAddRole) {
-        //role = role.toUpperCase();
-        // let userAccount;
-        // if (isAddRole) {
-        //     userAccount = await userAccountRepository.addRole(login, role);
-        // } else {
-        //     userAccount = await userAccountRepository.removeRole(login, role);
-        // }
-
         const userAccount = isAddRole
             ? await userAccountRepository.addRole(login, role)
             : await userAccountRepository.removeRole(login, role);
@@ -47,8 +39,7 @@ class UserAccountService {
 
     async changePassword(login, newPassword) {
         const userAccount = await userAccountRepository.changePassword(login, newPassword);
-        this.ifUserExists(userAccount, login);
-
+        return this.ifUserExists(userAccount, login);
     }
 
     async getUser(login) {
