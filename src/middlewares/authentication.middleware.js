@@ -8,7 +8,7 @@ const authentication = async (req, res, next) => {
         }
         const base64Credentials = authorization.split(' ')[1];
         const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
-        console.log(credentials);
+        //console.log(credentials);
         const [login, password] = credentials.split(':');
         const userAccount = await UserAccount.findById(login);
         if (!userAccount || !(await userAccount.comparePassword(password))) {
