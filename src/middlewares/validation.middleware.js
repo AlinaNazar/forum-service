@@ -49,17 +49,28 @@ const validate = (schemaName, target = 'body') => (req, res, next) => {
     if(!schema) {
         return next(new Error('Invalid schema name'));
     }
-    const {error, value} = schema.validate(req[target], {
-        abortEarly: false,
-        stripUnknown: true,
-    });
+    // const {error, value} = schema.validate(req[target], {
+    //     abortEarly: false,
+    //     stripUnknown: true,
+    // });
 
+    const {error} = schema.validate(req[target]);
     if(error) {
-        return next(
-            new ValidationError(error.details.map(e => e.message).join(', ')),
-        );
+        return res.status(400).send({
+            message: error.details[0].message,
+            code: 400,
+            status: 'Bad Request',
+            timestamp: new Date().toISOString(),
+            path: req.path,
+        });
     }
-    req[target] = value;
+
+    // if(error) {
+    //     return next(
+    //         new ValidationError(error.details.map(e => e.message).join(', ')),
+    //     );
+    // }
+    // req[target] = value;
     return next();
 }
 

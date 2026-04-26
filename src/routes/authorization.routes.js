@@ -6,7 +6,7 @@ import {ADMIN, MODERATOR} from "../configuration/constants.js";
 const router = Router();
 
 router.all('/account/user/:login/role/:role', authorization.hasRole(ADMIN));
-router.patch(['/account/user/:login', '/forum/post/:id/comment/:login'], authorization.isOwner('login'));
+router.patch(['/account/user/:user', '/forum/post/:id/comment/:user'], authorization.isOwner('user'));
 router.delete('/account/user/:login', authorization.isOwnerOrHasRole('login', ADMIN));
 
 router.post('/forum/post/:author', authorization.isOwner('author'));
