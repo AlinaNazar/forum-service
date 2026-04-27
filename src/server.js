@@ -8,15 +8,18 @@ import authentication from "./middlewares/authentication.middleware.js";
 import {createAdmin} from "./configuration/initAdmin.js";
 import authorizationRoutes from "./routes/authorization.routes.js";
 import cors from "cors";
+import {corsOptions} from "./configuration/corsOptions.js";
 
 const app = express();
 
-app.use(cors({
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-}));
+
+app.use(cors(corsOptions));
+// app.use(cors({
+//     origin: 'http://localhost:3000',
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+//     credentials: true
+// }));
 
 app.use(express.json());
 app.use(authentication);
