@@ -1,6 +1,9 @@
 import UserAccount from "../models/userAccount.model.js";
 
 const authentication = async (req, res, next) => {
+    if(req.method === 'OPTIONS'){
+        return next();
+    }
     if(req.path !== '/account/register' && !req.path.startsWith('/forum/posts')){
         const authorization = req.headers.authorization;
         if (!authorization || !authorization.startsWith('Basic ')) {
